@@ -1,7 +1,8 @@
 import os 
-from fastapi import APIRouter, FastAPI, WebSocket, Request, BackgroundTasks, HTTPException, WebSocketDisconnect
+from fastapi import APIRouter, Depends, FastAPI, WebSocket, Request, BackgroundTasks, HTTPException, WebSocketDisconnect
 import uuid
 from ..socket.connection import ConnectionManager
+from ..socket.utils import get_token
 
 chat = APIRouter()
 manager = ConnectionManager()
@@ -37,7 +38,7 @@ async def refresh_token(request: Request):
 # @access  Public
 
 @chat.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket, token: str = Depends(get_token)):
     await manager.connect(websocket)
 
     try:
